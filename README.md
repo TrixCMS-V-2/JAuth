@@ -8,11 +8,13 @@ For using, see the Demo.java
 Using with OpenLauncherLib:
 in the auth function:
 replace this:
+
 Authenticator authenticator = new Authenticator(Authenticator.MOJANG_AUTH_URL, AuthPoints.NORMAL_AUTH_POINTS);
 AuthResponse response = authenticator.authenticate(AuthAgent.MINECRAFT, username, password, "");
 authInfos = new AuthInfos(response.getSelectedProfile().getName(), response.getAccessToken(), response.getSelectedProfile().getId());
 
 by this:
+
 TrixAuth auth = new TrixAuth("NomDuSite", "UrlDuSite", "pseudo", "mot de passe");
 auth.connect();
 switch (auth.getAuthStatus()) {
