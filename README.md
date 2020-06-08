@@ -34,7 +34,7 @@ switch (auth.getAuthStatus()) {
 }
 ```
 
-// Log out //
+> Logout
 
 ```java
 auth.disconnect();
