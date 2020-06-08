@@ -5,6 +5,8 @@ JAuth is an library for using custom auth between java and TrixCMS. (For exemple
 
 #### Warning : You need install the "Auth" Plugin on your dashboard https://trixcms.eu/marketplace/resource/plugin/6
 
+<hr>
+
 Using with OpenLauncherLib:
 in the auth function:
 replace this:
