@@ -16,9 +16,9 @@ public class Demo
     }
 
     public Demo() {
-        //TrixAuth auth = new TrixAuth("DemoSite", site, "antoineok", "test");  // <---- valeur par défaut : 25 chr max pour un mdp/username et les ban/non confirm� ne passe pas,
-        //TrixAuth auth = new TrixAuth("DemoSite", site, "antoineok", "test", 16, 16);   <---- valeur par défaut : les ban/non confirmé ne passe pas,
-        TrixAuth auth = new TrixAuth("DemoSite", "http://trixcms.inovaperf.me/", "admin", "123456789", 16, 16, false, true); //  <---- tout est choisi par l'utilisateur 
+        //JAuth auth = new JAuth("DemoSite", site, "antoineok", "test");  // <---- valeur par défaut : 25 chr max pour un mdp/username et les ban/non confirm� ne passe pas,
+        //JAuth auth = new JAuth("DemoSite", site, "antoineok", "test", 16, 16);   <---- valeur par défaut : les ban/non confirmé ne passe pas,
+        JAuth auth = new JAuth("DemoSite", "http://trixcms.inovaperf.me/", "admin", "123456789", 16, 16, false, true); //  <---- tout est choisi par l'utilisateur 
         //(ordre: serverName, url, username, password, userMaxchar, passMaxchar, confirm, ban)
         try {
             auth.connect();
@@ -43,9 +43,9 @@ public class Demo
 
         switch (auth.getAuthStatus()) {
         case CONNECTED:
-            System.out.println(auth.getProfile().getToken());
-            System.out.println(auth.getProfile().getUuid());
-            System.out.println(auth.getProfile().getUserMail());
+            System.out.println("Token: " + auth.getProfile().getToken());
+            System.out.println("Uuid: " + auth.getProfile().getUuid());
+            System.out.println("Mail: " + auth.getProfile().getUserMail());
             break;
         case CONNECTION:
             // Connection in progress

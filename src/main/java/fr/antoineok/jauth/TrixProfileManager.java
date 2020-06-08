@@ -59,7 +59,6 @@ public class TrixProfileManager
     public TrixProfileManager(String url, String userName, String userPassword) throws Exception {
         TrixProfileManager.key = TrixUtil.getPublicKey(url);
         this.url = url;
-        System.out.println(userName);
         this.eUserName = new String(TrixUtil.encrypt(userName.getBytes(), key));
         this.userPassword = userPassword;
         this.userName = userName;
@@ -74,7 +73,7 @@ public class TrixProfileManager
     public boolean isProfileExist() throws Exception
     {
         
-        String url = this.url + "/tx_minecraft/api/mcauth/check";
+        String url = this.url + "/api/auth/v1/check";
         HttpPost post = new HttpPost(url);
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("data", eUserName));
@@ -83,7 +82,6 @@ public class TrixProfileManager
         try(CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post))
         {
             String jsonE = EntityUtils.toString(response.getEntity());
-            //System.out.println(jsonE);
             JsonExist exist = gson.fromJson(jsonE, JsonExist.class);
             return exist.exist();
         }
@@ -107,7 +105,7 @@ public class TrixProfileManager
        }
        String json = gson.toJson(new JsonData(userName, userPassword));
        String eJson = new String(TrixUtil.encrypt(json.getBytes(), key));
-       String url2 = this.url + "/tx_minecraft/api/mcauth/get";
+       String url2 = this.url + "/api/auth/v1/get";
        HttpPost post2 = new HttpPost(url2);
        List<NameValuePair> urlParameters2 = new ArrayList<>();
        urlParameters2.add(new BasicNameValuePair("data", eJson));
@@ -115,7 +113,7 @@ public class TrixProfileManager
        try(CloseableHttpClient httpClient2 = HttpClients.createDefault(); CloseableHttpResponse response2 = httpClient2.execute(post2))
        {
            String jsonE2 = EntityUtils.toString(response2.getEntity());
-           System.out.println(jsonE2);
+           //System.out.println(jsonE2);
            JsonExist ext = gson.fromJson(jsonE2, JsonExist.class);
            if(!ext.exist()) {
                throw new UserWrongException("Identifients Incorrects");
@@ -124,7 +122,7 @@ public class TrixProfileManager
        }
        catch(IOException e)
        {
-           System.out.println("Impossible d'envoyer la requete: ");
+           System.err.println("Impossible d'envoyer la requete: ");
            e.printStackTrace();
        }
     }

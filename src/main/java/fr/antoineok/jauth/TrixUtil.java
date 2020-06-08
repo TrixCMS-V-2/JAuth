@@ -25,7 +25,7 @@ public class TrixUtil
         try(CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post))
         {
             int responseCode = response.getStatusLine().getStatusCode();
-            System.out.println(responseCode);
+            //System.out.println(responseCode);
             return(responseCode);
         }
         catch(IOException e)
@@ -37,9 +37,9 @@ public class TrixUtil
 
     }
 
-    public static void log(String message)
+    public static String log(String message)
     {
-        System.out.println("TrixAuth � " + message);
+        return "JAuth > " + message;
     }
     
     public static byte[] encrypt(byte[] data, String publicKey) throws Exception {
@@ -72,7 +72,7 @@ public class TrixUtil
     }
     static String getPublicKey(String url)
     {
-        HttpPost post3 = new HttpPost(url +"/tx_minecraft/api/mcauth/public/key");
+        HttpPost post3 = new HttpPost(url +"/api/auth/v1/public/key");
         try(CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post3))
         {
             String resp = EntityUtils.toString(response.getEntity());

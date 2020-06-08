@@ -1,0 +1,14 @@
+{
+	"loginP": "Login in progress...",
+	"loginC": "Login successfully completed (<time>ms)",
+	"decoP": "Logout in progress...",
+	"decoC": "Logout successfully completed (<time>ms)",
+	"incoURL": "Cannot connect to server! Incorrect URL.",
+	"invalidIdent": "Cannot connect to server! Invalid credentials.",
+	"errCo": "Cannot connect to server. Could be Internet proxy/connection problem or network problem at <ServerName>. Sorry for the inconvenience.",
+	"compteInex": "Cannot connect to server. Account does not exist.",
+	"profileLoad": "Loading profile in progress...",
+	"profileLoadSucc": "Loading profile successfully completed. (<time>ms)",
+	"BannedAcc": "Cannot connect to server. You've been banned from <ServerName>.",
+	"accNotVerif": "Cannot connect to server. Please confirm your account before logging in."
+}

@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 repositories {
@@ -16,5 +17,38 @@ jar{
     	configurations.compile.collect {
     		it.isDirectory() ? it : zipTree(it)
     	}
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'jauth'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'JAuth'
+                description = 'La librairy de liaison Launcher-Site'
+                developers {
+                    developer {
+                        id = 'antoineok'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            // change URLs to point to your repos, e.g. http://my.org/repo
+            url = "$buildDir/repos/releases"
+            
+        }
     }
 }

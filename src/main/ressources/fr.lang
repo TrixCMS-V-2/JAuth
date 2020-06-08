@@ -1,0 +1,14 @@
+{
+	"loginP": "Connexion en cours...",
+	"loginC": "Connexion effectuée avec succès (<time>ms)",
+	"decoP": "Déconnexion en cours...",
+	"decoC": "Déconnexion(<time>ms)",
+	"incoURL": "Impossible de se connecter au serveur !\nURL incorrect.",
+	"invalidIdent": "Impossible de se connecter au serveur !\nIdentifiants invalides.",
+	"errCo": "Impossible de se connecter au serveur !\nCela peut etre lié à un problème de connexion/proxy internet ou à un problème au niveau du réseau de <ServerName>.\n\nDésolé pour le désagrément.",
+	"compteInex": "Impossible de se connecter au serveur !\nCompte Inexistant.",
+	"profileLoad": "Chargement du profile en cours...",
+	"profileLoadSucc": "Chargement du profile effectuée avec succès. (<time>ms)",
+	"bannedAcc": "Impossible de se connecter au serveur !\nVous avez été banni de <ServerName>.",
+	"accNotVerif": "Impossible de se connecter au serveur !\nVeuillez confirmer votre compte avant de vous connecter."
+}
