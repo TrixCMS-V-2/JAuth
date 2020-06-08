@@ -1,20 +1,21 @@
 # JAuth
 JAuth is an library for using custom auth between java and TrixCMS. (For exemple : For your modded minecraft project...)
 
-For using, see the Demo.java
-
-
+> For using, see the Demo.java
 
 Using with OpenLauncherLib:
 in the auth function:
 replace this:
 
+```java
 Authenticator authenticator = new Authenticator(Authenticator.MOJANG_AUTH_URL, AuthPoints.NORMAL_AUTH_POINTS);
 AuthResponse response = authenticator.authenticate(AuthAgent.MINECRAFT, username, password, "");
 authInfos = new AuthInfos(response.getSelectedProfile().getName(), response.getAccessToken(), response.getSelectedProfile().getId());
+```
 
 by this:
 
+```java
 TrixAuth auth = new TrixAuth("NomDuSite", "UrlDuSite", "pseudo", "mot de passe");
 auth.connect();
 switch (auth.getAuthStatus()) {
@@ -31,7 +32,10 @@ switch (auth.getAuthStatus()) {
         // Not connected
         break;
 }
+```
 
 // Log out //
 
+```java
 auth.disconnect();
+```
