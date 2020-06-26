@@ -20,7 +20,7 @@ authInfos = new AuthInfos(response.getSelectedProfile().getName(), response.getA
 by this:
 
 ```java
-TrixAuth auth = new JAuth("NomDuSite", "UrlDuSite", "pseudo", "mot de passe");
+JAuth auth = new JAuth("NomDuSite", "UrlDuSite", "pseudo", "mot de passe");
 auth.connect();
 switch (auth.getAuthStatus()) {
     case CONNECTED:
