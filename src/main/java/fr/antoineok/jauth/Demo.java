@@ -1,6 +1,14 @@
 package fr.antoineok.jauth;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import fr.antoineok.jauth.exception.HttpException;
 import fr.antoineok.jauth.exception.ServerNotFoundException;
@@ -23,23 +31,50 @@ public class Demo
         try {
             auth.connect();
         } catch (ServerNotFoundException e) {
+        	e.printStackTrace();
             System.err.println(e.getMessage()); // <---- URL == null
         } catch (UserEmptyException e) {
+        	e.printStackTrace();
             System.err.println(e.getMessage()); // <---- user name || password == null
         } catch (UserNotConfirmedException e) {
+        	e.printStackTrace();
             System.err.println(e.getMessage()); // <---- Email address of the user is not confirmed
         } catch (UserBannedException e) {
+        	e.printStackTrace();
             System.err.println(e.getMessage()); // <---- User is banned
         } catch (UserWrongException e) {
+        	e.printStackTrace();
             System.err.println(e.getMessage()); // <--- Invalid user name or password
         } catch (HttpException e) {
+        	e.printStackTrace();
             System.err.println(e.getMessage()); // <--- Site timed out
         }
         catch(UnsupportedEncodingException e)
         {
             
             System.err.println(e.getMessage());
-        }
+        } catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalBlockSizeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         switch (auth.getAuthStatus()) {
         case CONNECTED:

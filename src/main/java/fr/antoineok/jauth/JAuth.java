@@ -1,11 +1,18 @@
 package fr.antoineok.jauth;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.DecimalFormat;
 import java.util.Locale;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -110,7 +117,6 @@ public class JAuth
             text.append(line);
         }
         reader.close();
-        //System.out.println(text.toString());
         return text.toString();
     }
 
@@ -134,19 +140,17 @@ public class JAuth
         System.out.println(TrixUtil.log(langDef.getDecoP().replace("<time>", form.format(time))));
     }
 
-    public void connect() throws ServerNotFoundException, UserEmptyException, UserNotConfirmedException, UserBannedException, UserWrongException, HttpException, UnsupportedEncodingException
+    public void connect() throws ServerNotFoundException, UserEmptyException, UserNotConfirmedException, UserBannedException, UserWrongException, IOException
     {
         System.out.println(TrixUtil.log(langDef.getLoginP()));
         long time = System.currentTimeMillis();
-        try
-        {
-            this.connect(this.urlF);
-        }
-        catch(Exception e)
-        {
-
-            e.printStackTrace();
-        }
+        try {
+			this.connect(this.urlF);
+		} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException
+				| IllegalBlockSizeException | BadPaddingException e) {
+			
+			e.printStackTrace();
+		}
         if(this.authStatus != AuthStatus.CONNECTED)
         {
             return;
@@ -156,7 +160,7 @@ public class JAuth
         System.out.println(TrixUtil.log(langDef.getLoginP().replace("<time>", form.format(time))));
     }
 
-    private void connect(String url) throws Exception
+    private void connect(String url) throws ServerNotFoundException, UserEmptyException, UserNotConfirmedException, UserBannedException, UserWrongException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException
     {
 
         this.authStatus = AuthStatus.CONNECTION;
@@ -191,7 +195,7 @@ public class JAuth
         TrixProfileManager profileManager = new TrixProfileManager(this.urlF, this.userName, this.userPassword);
 
         /**
-         * Permet de v�rifier si l'utilisateur est bon
+         * Permet de vérifier si l'utilisateur est bon
          */
 
         if(!profileManager.isProfileExist())
@@ -205,9 +209,10 @@ public class JAuth
         System.out.println(TrixUtil.log(langDef.getProfileLoad()));
         long time = System.currentTimeMillis();
         /*
-         * Permet de r�cup�rer les informations du joueur
+         * Permet de récupérer les informations du joueur
          */
-        profileManager.loadProfile();
+        
+		profileManager.loadProfile();
         this.profile = profileManager.getProfile();
 
         time = System.currentTimeMillis() - time;

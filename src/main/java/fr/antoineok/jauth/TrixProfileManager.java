@@ -1,8 +1,16 @@
 package fr.antoineok.jauth;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -56,10 +64,15 @@ public class TrixProfileManager
 
 
 
-    public TrixProfileManager(String url, String userName, String userPassword) throws Exception {
+    public TrixProfileManager(String url, String userName, String userPassword) {
         TrixProfileManager.key = TrixUtil.getPublicKey(url);
         this.url = url;
-        this.eUserName = new String(TrixUtil.encrypt(userName.getBytes(), key));
+        try {
+			this.eUserName = new String(TrixUtil.encrypt(userName.getBytes(), key));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         this.userPassword = userPassword;
         this.userName = userName;
     }
@@ -70,7 +83,7 @@ public class TrixProfileManager
 
 
 
-    public boolean isProfileExist() throws Exception
+    public boolean isProfileExist() 
     {
         
         String url = this.url + "/api/auth/v1/check";
@@ -78,7 +91,12 @@ public class TrixProfileManager
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("data", eUserName));
         
-        post.setEntity(new UrlEncodedFormEntity(urlParameters));
+        try {
+			post.setEntity(new UrlEncodedFormEntity(urlParameters));
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         try(CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post))
         {
             String jsonE = EntityUtils.toString(response.getEntity());
@@ -98,7 +116,7 @@ public class TrixProfileManager
 
 
 
-    public void loadProfile() throws Exception
+    public void loadProfile() throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException, UserWrongException
     {
        if(!this.isProfileExist()) {
            return;
