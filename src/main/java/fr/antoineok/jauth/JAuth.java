@@ -100,11 +100,11 @@ public class JAuth
         InputStream in = null;
         if(Locale.getDefault().getLanguage().equals(Locale.FRENCH.getLanguage()))
         {
-            in = JAuth.class.getResourceAsStream("/fr.lang");
+            in = JAuth.class.getResourceAsStream("/fr.json");
         }
         else
         {
-            in = JAuth.class.getResourceAsStream("/en.lang");
+            in = JAuth.class.getResourceAsStream("/en.json");
         }
         //
         final BufferedReader reader = new BufferedReader(new InputStreamReader(in));

@@ -1,14 +1,6 @@
 package fr.antoineok.jauth;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import fr.antoineok.jauth.exception.HttpException;
 import fr.antoineok.jauth.exception.ServerNotFoundException;
@@ -26,7 +18,7 @@ public class Demo
     public Demo() {
         //JAuth auth = new JAuth("DemoSite", site, "antoineok", "test");  // <---- valeur par défaut : 25 chr max pour un mdp/username et les ban/non confirm� ne passe pas,
         //JAuth auth = new JAuth("DemoSite", site, "antoineok", "test", 16, 16);   <---- valeur par défaut : les ban/non confirmé ne passe pas,
-        JAuth auth = new JAuth("DemoSite", "http://trixcms.inovaperf.me/", "admin", "123456789", 16, 16, false, true); //  <---- tout est choisi par l'utilisateur 
+        JAuth auth = new JAuth("DemoSite", "https://trixcms.inovaperf.me/", "test", "test", 16, 16, false, true); //  <---- tout est choisi par l'utilisateur
         //(ordre: serverName, url, username, password, userMaxchar, passMaxchar, confirm, ban)
         try {
             auth.connect();
@@ -48,33 +40,10 @@ public class Demo
         } catch (HttpException e) {
         	e.printStackTrace();
             System.err.println(e.getMessage()); // <--- Site timed out
-        }
-        catch(UnsupportedEncodingException e)
+        } catch(IOException e)
         {
-            
             System.err.println(e.getMessage());
-        } catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        }
 
         switch (auth.getAuthStatus()) {
         case CONNECTED:

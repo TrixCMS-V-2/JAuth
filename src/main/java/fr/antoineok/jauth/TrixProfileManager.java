@@ -6,6 +6,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
@@ -111,17 +112,18 @@ public class TrixProfileManager
     }
 
 
-
-    
-
-
+    public static String toBase64(String input)
+    {
+        return Base64.getEncoder().encodeToString(input.getBytes());
+    }
 
     public void loadProfile() throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException, UserWrongException
     {
        if(!this.isProfileExist()) {
            return;
        }
-       String json = gson.toJson(new JsonData(userName, userPassword));
+       String json = gson.toJson(new JsonData(toBase64(userName), toBase64(userPassword)));
+       System.out.println(json);
        String eJson = new String(TrixUtil.encrypt(json.getBytes(), key));
        String url2 = this.url + "/api/auth/v1/get";
        HttpPost post2 = new HttpPost(url2);
@@ -131,7 +133,7 @@ public class TrixProfileManager
        try(CloseableHttpClient httpClient2 = HttpClients.createDefault(); CloseableHttpResponse response2 = httpClient2.execute(post2))
        {
            String jsonE2 = EntityUtils.toString(response2.getEntity());
-           //System.out.println(jsonE2);
+           System.out.println(jsonE2);
            JsonExist ext = gson.fromJson(jsonE2, JsonExist.class);
            if(!ext.exist()) {
                throw new UserWrongException("Identifients Incorrects");
