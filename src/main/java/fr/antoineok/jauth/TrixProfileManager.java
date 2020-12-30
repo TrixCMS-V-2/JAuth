@@ -123,7 +123,6 @@ public class TrixProfileManager
            return;
        }
        String json = gson.toJson(new JsonData(toBase64(userName), toBase64(userPassword)));
-       System.out.println(json);
        String eJson = new String(TrixUtil.encrypt(json.getBytes(), key));
        String url2 = this.url + "/api/auth/v1/get";
        HttpPost post2 = new HttpPost(url2);
@@ -133,7 +132,6 @@ public class TrixProfileManager
        try(CloseableHttpClient httpClient2 = HttpClients.createDefault(); CloseableHttpResponse response2 = httpClient2.execute(post2))
        {
            String jsonE2 = EntityUtils.toString(response2.getEntity());
-           System.out.println(jsonE2);
            JsonExist ext = gson.fromJson(jsonE2, JsonExist.class);
            if(!ext.exist()) {
                throw new UserWrongException("Identifients Incorrects");
