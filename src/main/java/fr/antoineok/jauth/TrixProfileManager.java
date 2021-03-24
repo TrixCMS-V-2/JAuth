@@ -2,6 +2,7 @@ package fr.antoineok.jauth;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -13,6 +14,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.commons.codec.Charsets;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -114,7 +116,7 @@ public class TrixProfileManager
 
     public static String toBase64(String input)
     {
-        return Base64.getEncoder().encodeToString(input.getBytes());
+        return Base64.getEncoder().encodeToString(input.getBytes(Charsets.UTF_8));
     }
 
     public void loadProfile() throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException, UserWrongException
@@ -132,6 +134,7 @@ public class TrixProfileManager
        try(CloseableHttpClient httpClient2 = HttpClients.createDefault(); CloseableHttpResponse response2 = httpClient2.execute(post2))
        {
            String jsonE2 = EntityUtils.toString(response2.getEntity());
+           System.out.println(jsonE2);
            JsonExist ext = gson.fromJson(jsonE2, JsonExist.class);
            if(!ext.exist()) {
                throw new UserWrongException("Identifients Incorrects");

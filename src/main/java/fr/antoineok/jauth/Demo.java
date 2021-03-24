@@ -1,13 +1,15 @@
 package fr.antoineok.jauth;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
-import fr.antoineok.jauth.exception.HttpException;
-import fr.antoineok.jauth.exception.ServerNotFoundException;
-import fr.antoineok.jauth.exception.UserBannedException;
-import fr.antoineok.jauth.exception.UserEmptyException;
-import fr.antoineok.jauth.exception.UserNotConfirmedException;
-import fr.antoineok.jauth.exception.UserWrongException;
+import fr.antoineok.jauth.exception.*;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class Demo
 {
@@ -16,12 +18,19 @@ public class Demo
     }
 
     public Demo() {
+        String site = "https://trixcms.inovaperf.me/";
         //JAuth auth = new JAuth("DemoSite", site, "antoineok", "test");  // <---- valeur par défaut : 25 chr max pour un mdp/username et les ban/non confirm� ne passe pas,
         //JAuth auth = new JAuth("DemoSite", site, "antoineok", "test", 16, 16);   <---- valeur par défaut : les ban/non confirmé ne passe pas,
-        JAuth auth = new JAuth("DemoSite", "https://trixcms.inovaperf.me/", "test", "test", 16, 16, false, true); //  <---- tout est choisi par l'utilisateur
+        JAuth auth = new JAuth("DemoSite", site, 16, 16, false, true); //  <---- tout est choisi par l'utilisateur
         //(ordre: serverName, url, username, password, userMaxchar, passMaxchar, confirm, ban)
+
         try {
-            auth.connect();
+            System.out.printf("%s %s", "Here is the new Token: ", auth.refresh("test", "test"));
+        } catch (UserWrongException | InvalidTokenException | IOException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        /*try {
+            auth.connect("test", "test");
         } catch (ServerNotFoundException e) {
         	e.printStackTrace();
             System.err.println(e.getMessage()); // <---- URL == null
@@ -64,6 +73,6 @@ public class Demo
         auth.disconnect();
         
         
-       
+       */
     }
 }

@@ -8,6 +8,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.Locale;
 
 import javax.crypto.BadPaddingException;
@@ -17,14 +20,21 @@ import javax.crypto.NoSuchPaddingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import fr.antoineok.jauth.exception.HttpException;
-import fr.antoineok.jauth.exception.ServerNotFoundException;
-import fr.antoineok.jauth.exception.UserBannedException;
-import fr.antoineok.jauth.exception.UserEmptyException;
-import fr.antoineok.jauth.exception.UserNotConfirmedException;
-import fr.antoineok.jauth.exception.UserWrongException;
-import fr.antoineok.jauth.jsons.JsonLang;
-import fr.antoineok.jauth.jsons.JsonProfile;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import fr.antoineok.jauth.exception.*;
+import fr.antoineok.jauth.jsons.*;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 public class JAuth
 {
@@ -57,14 +67,12 @@ public class JAuth
     private int userMaxChar;
     private int passwordMaxChar;
 
-    private String userName, userPassword;
-
     public JAuth(String serverName, String url, String username, String password)
     {
-        this(serverName, url, username, password, 25, 25);
+        this(serverName, url, 25, 25);
     }
 
-    public JAuth(String serverName, String url, String username, String password, int userMaxchar, int passMaxchar, boolean confirm, boolean ban)
+    public JAuth(String serverName, String url, int userMaxchar, int passMaxchar, boolean confirm, boolean ban)
     {
         if(url.endsWith("/"))
         {
@@ -76,8 +84,6 @@ public class JAuth
         }
         this.authStatus = AuthStatus.DISCONNECTED;
         this.userConnected = false;
-        this.userName = username;
-        this.userPassword = password;
         this.serverName = serverName;
         this.userMaxChar = userMaxchar;
         this.passwordMaxChar = passMaxchar;
@@ -120,9 +126,9 @@ public class JAuth
         return text.toString();
     }
 
-    public JAuth(String serverName, String url, String username, String password, int userMaxchar, int passMaxchar)
+    public JAuth(String serverName, String url, int userMaxchar, int passMaxchar)
     {
-        this(serverName, url, username, password, userMaxchar, passMaxchar, false, false);
+        this(serverName, url, userMaxchar, passMaxchar, false, false);
     }
 
     public void disconnect()
@@ -140,12 +146,12 @@ public class JAuth
         System.out.println(TrixUtil.log(langDef.getDecoP().replace("<time>", form.format(time))));
     }
 
-    public void connect() throws ServerNotFoundException, UserEmptyException, UserNotConfirmedException, UserBannedException, UserWrongException, IOException
+    public void connect(String username, String password) throws ServerNotFoundException, UserEmptyException, UserNotConfirmedException, UserBannedException, UserWrongException, IOException
     {
         System.out.println(TrixUtil.log(langDef.getLoginP()));
         long time = System.currentTimeMillis();
         try {
-			this.connect(this.urlF);
+			this.connect(this.urlF, username, password);
 		} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException
 				| IllegalBlockSizeException | BadPaddingException e) {
 			
@@ -160,7 +166,7 @@ public class JAuth
         System.out.println(TrixUtil.log(langDef.getLoginP().replace("<time>", form.format(time))));
     }
 
-    private void connect(String url) throws ServerNotFoundException, UserEmptyException, UserNotConfirmedException, UserBannedException, UserWrongException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException
+    private void connect(String url, String username, String password) throws ServerNotFoundException, UserEmptyException, UserNotConfirmedException, UserBannedException, UserWrongException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException
     {
 
         this.authStatus = AuthStatus.CONNECTION;
@@ -174,7 +180,7 @@ public class JAuth
             throw new ServerNotFoundException(TrixUtil.log(langDef.getIncoURL()));
         }
 
-        if(this.userName.length() > this.userMaxChar || this.userPassword.length() > this.passwordMaxChar || this.userName == "" || this.userPassword == "" || this.userName == null || this.userPassword == null || this.userName.indexOf(' ') != -1 || this.userPassword.indexOf(' ') != -1)
+        if(username.length() > this.userMaxChar || password.length() > this.passwordMaxChar || username.equals("") || password.equals("") || password == null || username.indexOf(' ') != -1 || password.indexOf(' ') != -1)
         {
 
             this.userConnected = false;
@@ -192,9 +198,9 @@ public class JAuth
             throw new HttpException(TrixUtil.log(langDef.getErrCo().replace("<ServerName>", this.serverName)));
         }
 
-        TrixProfileManager profileManager = new TrixProfileManager(this.urlF, this.userName, this.userPassword);
+        TrixProfileManager profileManager = new TrixProfileManager(this.urlF, username, password);
 
-        /**
+        /* *
          * Permet de vérifier si l'utilisateur est bon
          */
 
@@ -233,5 +239,82 @@ public class JAuth
         this.userConnected = true;
 
         this.authStatus = AuthStatus.CONNECTED;
+    }
+
+    /**
+     *
+     * @param username the player username
+     * @param accessToken the player access token
+     * @return the new token of player (if there is no exception)
+     * @throws UserWrongException if the player doesn't exist (invalid username)
+     * @throws InvalidTokenException if the token is wrong
+     * @throws IOException if there is a problem with the connexion to the site
+     */
+    public String refresh(String username, String accessToken) throws UserWrongException, InvalidTokenException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException {
+        String dataJson = GSON.toJson(new JsonToken(TrixProfileManager.toBase64(username), TrixProfileManager.toBase64(accessToken)));
+        HttpPost post = new HttpPost(this.urlF + "/api/auth/v1/refresh");
+        String key = TrixUtil.getPublicKey(urlF);
+        String eJson = new String(TrixUtil.encrypt(dataJson.getBytes(), key));
+        List<NameValuePair> urlParameters2 = new ArrayList<>();
+        urlParameters2.add(new BasicNameValuePair("data", eJson));
+        post.setEntity(new UrlEncodedFormEntity(urlParameters2));
+
+        try(CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post))
+        {
+            String jsonE = EntityUtils.toString(response.getEntity());
+            System.out.println(jsonE);
+            JsonObject object = JsonParser.parseString(jsonE).getAsJsonObject();
+            if(object.getAsJsonPrimitive("type").getAsString().equals("err")){
+                switch(object.getAsJsonPrimitive("error").getAsString()){
+                    case "accountNotFound":
+                        throw new UserWrongException(TrixUtil.log(langDef.getCompteInex()));
+                    case "accessTokenNotGood":
+                        throw new InvalidTokenException();
+                    default:
+                        return  "";
+                }
+            }
+            else{
+                return object.getAsJsonPrimitive("token").getAsString();
+            }
+        }
+
+    }
+
+    /**
+     *
+     * @param username the player username
+     * @param accessToken the player access token
+     * @return the profile of the player
+     */
+    public JsonProfile validate(String username, String accessToken) throws IOException, UserWrongException, InvalidTokenException {
+        String dataJson = GSON.toJson(new JsonToken(username, accessToken));
+        StringEntity requestEntity = new StringEntity(
+                dataJson,
+                ContentType.APPLICATION_JSON);
+        HttpPost post = new HttpPost(this.urlF + "/validate");
+
+        post.setEntity(requestEntity);
+
+        System.out.println(post.getURI());
+
+        try(CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post))
+        {
+            String jsonE = EntityUtils.toString(response.getEntity());
+            System.out.println(jsonE);
+            JsonObject object = JsonParser.parseString(jsonE).getAsJsonObject();
+            if(object.getAsJsonPrimitive("type").getAsString().equals("err")){
+                switch(object.getAsJsonPrimitive("error").getAsString()){
+                    case "accountNotFound":
+                        throw new UserWrongException(TrixUtil.log(langDef.getCompteInex()));
+                    case "accessTokenNotGood":
+                        throw new InvalidTokenException();
+                }
+            }
+            else{
+
+            }
+        }
+        return null;
     }
 }
