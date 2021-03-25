@@ -2,18 +2,18 @@ package fr.antoineok.jauth.jsons;
 
 public class JsonToken {
 	
-	private String username, accessToken;
+	private String username, token;
 
-	public JsonToken(String username, String accessToken) {
+	public JsonToken(String username, String token) {
 		this.username = username;
-		this.accessToken = accessToken;
+		this.token = token;
 	}
 
 	public String getUsername() {
 		return username;
 	}
 
-	public String getAccessToken() {
-		return accessToken;
+	public String getToken() {
+		return token;
 	}
 }

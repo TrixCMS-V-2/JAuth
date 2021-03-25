@@ -82,9 +82,7 @@ public class TrixUtil
         HttpPost post3 = new HttpPost(url +"/api/auth/v1/public/key");
         try(CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post3))
         {
-            String resp = EntityUtils.toString(response.getEntity());
-            //System.out.println(resp);
-            return resp;
+            return EntityUtils.toString(response.getEntity());
         }
         catch(IOException e)
         {

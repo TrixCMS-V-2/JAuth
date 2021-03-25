@@ -131,32 +131,27 @@ public class JAuth
         this(serverName, url, userMaxchar, passMaxchar, false, false);
     }
 
-    public void disconnect()
-    {
-        if(!this.userConnected || this.authStatus != AuthStatus.DISCONNECTED)
-        {
-            return;
-        }
-        System.out.println(TrixUtil.log(langDef.getDecoP()));
-        long time = System.currentTimeMillis();
-        this.authStatus = AuthStatus.DISCONNECTED;
-        this.userConnected = false;
-        time = System.currentTimeMillis() - time;
-        DecimalFormat form = new DecimalFormat("#.##");
-        System.out.println(TrixUtil.log(langDef.getDecoP().replace("<time>", form.format(time))));
-    }
-
+    /**
+     *
+     * @param username the player username
+     * @param password the player password
+     * @throws ServerNotFoundException if the remote server don't exit
+     * @throws UserEmptyException if the player don't exist
+     * @throws UserNotConfirmedException if the player hasn't confirmed his account
+     * @throws UserBannedException if the user is banned
+     * @throws UserWrongException if the username or the password is invalid
+     * @throws IOException if there is a problem with the connexion
+     */
     public void connect(String username, String password) throws ServerNotFoundException, UserEmptyException, UserNotConfirmedException, UserBannedException, UserWrongException, IOException
     {
         System.out.println(TrixUtil.log(langDef.getLoginP()));
         long time = System.currentTimeMillis();
         try {
-			this.connect(this.urlF, username, password);
-		} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException
-				| IllegalBlockSizeException | BadPaddingException e) {
-			
-			e.printStackTrace();
-		}
+            this.connect(this.urlF, username, password);
+        } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+
         if(this.authStatus != AuthStatus.CONNECTED)
         {
             return;
@@ -227,8 +222,8 @@ public class JAuth
         if(this.rejectedBanned && this.profile.isAccountBanned())
         {
             this.userConnected = false;
-            this.authStatus = AuthStatus.DISCONNECTED;
-            throw new UserBannedException(TrixUtil.log(langDef.getBannedAcc().replace("<ServerName>", this.serverName)));
+            this.authStatus = AuthStatus.DISCONNECTED;//
+            throw new UserBannedException(TrixUtil.log(langDef.getBannedAcc().replace("<ServerName>", this.serverName).replace("<reason>", profile.getBanned_reason())));
         }
         if(this.neededConfirmed && !this.profile.isAccountConfirmed())
         {
@@ -287,21 +282,18 @@ public class JAuth
      * @param accessToken the player access token
      * @return the profile of the player
      */
-    public JsonProfile validate(String username, String accessToken) throws IOException, UserWrongException, InvalidTokenException {
-        String dataJson = GSON.toJson(new JsonToken(username, accessToken));
-        StringEntity requestEntity = new StringEntity(
-                dataJson,
-                ContentType.APPLICATION_JSON);
-        HttpPost post = new HttpPost(this.urlF + "/validate");
-
-        post.setEntity(requestEntity);
-
-        System.out.println(post.getURI());
+    public JsonProfile validate(String username, String accessToken) throws IOException, UserWrongException, InvalidTokenException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException {
+        String dataJson = GSON.toJson(new JsonToken(TrixProfileManager.toBase64(username), TrixProfileManager.toBase64(accessToken)));
+        HttpPost post = new HttpPost(this.urlF + "/api/auth/v1/validate");
+        String key = TrixUtil.getPublicKey(urlF);
+        String eJson = new String(TrixUtil.encrypt(dataJson.getBytes(), key));
+        List<NameValuePair> urlParameters2 = new ArrayList<>();
+        urlParameters2.add(new BasicNameValuePair("data", eJson));
+        post.setEntity(new UrlEncodedFormEntity(urlParameters2));
 
         try(CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(post))
         {
             String jsonE = EntityUtils.toString(response.getEntity());
-            System.out.println(jsonE);
             JsonObject object = JsonParser.parseString(jsonE).getAsJsonObject();
             if(object.getAsJsonPrimitive("type").getAsString().equals("err")){
                 switch(object.getAsJsonPrimitive("error").getAsString()){
@@ -312,7 +304,9 @@ public class JAuth
                 }
             }
             else{
-
+                String profileJson = object.getAsJsonObject("profile").toString();
+                System.out.println(profileJson);
+                return GSON.fromJson(profileJson, JsonProfile.class);
             }
         }
         return null;

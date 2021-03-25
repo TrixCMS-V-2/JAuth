@@ -24,12 +24,22 @@ public class Demo
         JAuth auth = new JAuth("DemoSite", site, 16, 16, false, true); //  <---- tout est choisi par l'utilisateur
         //(ordre: serverName, url, username, password, userMaxchar, passMaxchar, confirm, ban)
 
+
         try {
-            System.out.printf("%s %s", "Here is the new Token: ", auth.refresh("test", "test"));
+            auth.validate("test", "token"); // <---- get the user profile with the player username and access token
         } catch (UserWrongException | InvalidTokenException | IOException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
-        /*try {
+
+
+        try {
+            auth.refresh("test", "token"); // <---- refresh the user token
+        } catch (UserWrongException | InvalidTokenException | IOException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
             auth.connect("test", "test");
         } catch (ServerNotFoundException e) {
         	e.printStackTrace();
@@ -56,9 +66,7 @@ public class Demo
 
         switch (auth.getAuthStatus()) {
         case CONNECTED:
-            System.out.println("Token: " + auth.getProfile().getToken());
-            System.out.println("Uuid: " + auth.getProfile().getUuid());
-            System.out.println("Mail: " + auth.getProfile().getUserMail());
+            System.out.println(auth.getProfile());
             break;
         case CONNECTION:
             // Connection in progress
@@ -67,12 +75,5 @@ public class Demo
             // Not connected
             break;
         }
-
-        // Log out //
-
-        auth.disconnect();
-        
-        
-       */
     }
 }

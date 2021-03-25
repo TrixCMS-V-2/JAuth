@@ -9,6 +9,6 @@
 	"compteInex": "Impossible de se connecter au serveur !\nCompte Inexistant.",
 	"profileLoad": "Chargement du profile en cours...",
 	"profileLoadSucc": "Chargement du profile effectuée avec succès. (<time>ms)",
-	"bannedAcc": "Impossible de se connecter au serveur !\nVous avez été banni de <ServerName>.",
+	"bannedAcc": "Impossible de se connecter au serveur !\nVous avez été banni de <ServerName> car <reason>.",
 	"accNotVerif": "Impossible de se connecter au serveur !\nVeuillez confirmer votre compte avant de vous connecter."
 }
