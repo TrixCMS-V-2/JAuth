@@ -7,6 +7,8 @@ JAuth is an library for using custom auth between java and TrixCMS. (For exemple
 
 <hr>
 
+> Login with password
+
 Using with OpenLauncherLib:
 in the auth function:
 replace this:
@@ -20,8 +22,8 @@ authInfos = new AuthInfos(response.getSelectedProfile().getName(), response.getA
 by this:
 
 ```java
-JAuth auth = new JAuth("NomDuSite", "UrlDuSite", "pseudo", "mot de passe");
-auth.connect();
+JAuth auth = new JAuth("NomDuSite", "UrlDuSite");
+auth.connect("pseudo", "mot de passe");
 switch (auth.getAuthStatus()) {
     case CONNECTED:
         System.out.println("Token: " + auth.getProfile().getToken());
@@ -38,8 +40,22 @@ switch (auth.getAuthStatus()) {
 }
 ```
 
-> Logout
+<hr>
+
+> Login with token
 
 ```java
-auth.disconnect();
+JAuth auth = new JAuth("NomDuSite", "UrlDuSite");
+auth.validate("pseudo", "token");
+System.out.println("Token: " + auth.getProfile().getToken());
+System.out.println("Uuid: " + auth.getProfile().getUuid());
+System.out.println("Mail: " + auth.getProfile().getUserMail());
 ```
+
+
+> refresh the token
+```java
+JAuth auth = new JAuth("NomDuSite", "UrlDuSite");
+auth.refresh("pseudo", "token");
+```
+

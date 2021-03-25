@@ -280,9 +280,8 @@ public class JAuth
      *
      * @param username the player username
      * @param accessToken the player access token
-     * @return the profile of the player
      */
-    public JsonProfile validate(String username, String accessToken) throws IOException, UserWrongException, InvalidTokenException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException {
+    public void validate(String username, String accessToken) throws IOException, UserWrongException, InvalidTokenException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException {
         String dataJson = GSON.toJson(new JsonToken(TrixProfileManager.toBase64(username), TrixProfileManager.toBase64(accessToken)));
         HttpPost post = new HttpPost(this.urlF + "/api/auth/v1/validate");
         String key = TrixUtil.getPublicKey(urlF);
@@ -306,9 +305,8 @@ public class JAuth
             else{
                 String profileJson = object.getAsJsonObject("profile").toString();
                 System.out.println(profileJson);
-                return GSON.fromJson(profileJson, JsonProfile.class);
+                this.profile =  GSON.fromJson(profileJson, JsonProfile.class);
             }
         }
-        return null;
     }
 }
