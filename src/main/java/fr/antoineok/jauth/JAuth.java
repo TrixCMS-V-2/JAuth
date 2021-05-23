@@ -67,7 +67,7 @@ public class JAuth
     private int userMaxChar;
     private int passwordMaxChar;
 
-    public JAuth(String serverName, String url, String username, String password)
+    public JAuth(String serverName, String url)
     {
         this(serverName, url, 25, 25);
     }
